@@ -122,8 +122,8 @@ body {
     display: flex;
     gap: 25px;
     justify-content: space-between;
-    background-color: #357ABD;
-    background: linear-gradient(135deg, #183351 0%, #357ABD 100%);
+    background-color: #0a1f34;
+    background: linear-gradient(135deg, #0e1f32 0%, #254e76 100%);
     padding: 20px;
     opacity: .75;
     
