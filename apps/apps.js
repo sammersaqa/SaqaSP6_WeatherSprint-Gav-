@@ -86,11 +86,7 @@ async function fetchCurrentWeather(city) {
 }
 
 /**
- * Fetches 5-day forecast data for a given city
- * NOTE: OpenWeather's free '/forecast' endpoint provides 5 days (40 timestamps).
- * To get a true 7-day forecast, you would need their commercial 'onecall' endpoint
- * or a different API. We will extract the first 7 available days from the 5-day
- * data, which usually covers about 5-6 full days plus the current partial day.
+ * Fetches 7-day forecast data for a given city
  * * @param {string} city - City name to fetch forecast for
  * @returns {Promise<Object|null>} Forecast data or null if error
  */
