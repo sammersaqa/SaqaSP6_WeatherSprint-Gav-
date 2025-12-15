@@ -1,9 +1,10 @@
-// --- MAIN APPLICATION MODULE ---
+// --- MAIN APPLICATION MODULE (apps/apps.js) ---
 
 import { saveLastCity, getLastCity } from './storage.js';
 
 // --- 1. CONFIGURATION ---
-const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
+// IMPORTANT: Replace this with your actual OpenWeatherMap API Key
+const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Get all necessary DOM elements
@@ -22,8 +23,6 @@ let currentCity = 'Stockton';
 
 /**
  * Maps weather condition codes to emoji icons
- * @param {number} code - Weather condition code from API
- * @returns {string} Weather emoji
  */
 function getWeatherIcon(code) {
     if (code >= 200 && code < 300) return '⛈️'; // Thunderstorm
@@ -38,11 +37,8 @@ function getWeatherIcon(code) {
     return '🌡️';
 }
 
-/**
- * Displays an error message to the user
- * @param {string} message - Error message to display
- */
 function displayError(message) {
+    console.error("API Fetch Error:", message);
     errorMessage.textContent = message;
     errorMessage.style.display = 'block';
     setTimeout(() => {
@@ -50,35 +46,32 @@ function displayError(message) {
     }, 5000);
 }
 
-/**
- * Clears any displayed error messages
- */
 function clearError() {
     errorMessage.style.display = 'none';
 }
 
-// --- 3. FETCHING DATA ---
+// --- 3. FETCHING DATA (REQUIRED ASSIGNMENT POINT: Console Fetches) ---
 
 /**
- * Fetches current weather data for a given city
- * @param {string} city - City name to fetch weather for
- * @returns {Promise<Object|null>} Weather data or null if error
+ * Fetches current weather data for a given city and logs to console.
  */
 async function fetchCurrentWeather(city) {
+    console.log(`Fetching current weather for: ${city}...`);
     try {
         clearError();
-        const response = await fetch(
-            `${BASE_URL}weather?q=${city}&units=imperial&appid=${API_KEY}`
-        );
+        const url = `${BASE_URL}weather?q=${city}&units=imperial&appid=${API_KEY}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
             if (response.status === 404) {
                 throw new Error(`City "${city}" not found.`);
             }
-            throw new Error(`Weather data not available`);
+            throw new Error(`Weather data not available. Status: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        console.log("✅ Current Weather Data Fetched:", data);
+        return data;
     } catch (error) {
         displayError(error.message);
         return null;
@@ -86,22 +79,22 @@ async function fetchCurrentWeather(city) {
 }
 
 /**
- * Fetches 7-day forecast data for a given city
- * * @param {string} city - City name to fetch forecast for
- * @returns {Promise<Object|null>} Forecast data or null if error
+ * Fetches forecast data for a given city and logs to console.
  */
 async function fetchForecast(city) {
+    console.log(`Fetching 5-day/3-hour forecast data for: ${city}...`);
     try {
         clearError();
-        const response = await fetch(
-            `${BASE_URL}forecast?q=${city}&units=imperial&appid=${API_KEY}`
-        );
+        const url = `${BASE_URL}forecast?q=${city}&units=imperial&appid=${API_KEY}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error(`Forecast data not available`);
+            throw new Error(`Forecast data not available. Status: ${response.status}`);
         }
         
-        return await response.json();
+        const data = await response.json();
+        console.log("✅ Forecast Data Fetched:", data);
+        return data;
     } catch (error) {
         displayError(error.message);
         return null;
@@ -110,10 +103,6 @@ async function fetchForecast(city) {
 
 // --- 4. RENDERING DATA ---
 
-/**
- * Displays the current weather data in the card
- * @param {Object} data - Weather data from API
- */
 function displayCurrentWeather(data) {
     const temp = Math.round(data.main.temp);
     const tempHigh = Math.round(data.main.temp_max);
@@ -132,30 +121,92 @@ function displayCurrentWeather(data) {
     weatherInfo.textContent = condition;
     currentIcon.textContent = getWeatherIcon(data.weather[0].id);
     
-    // Save the successfully loaded city to global state and storage
     currentCity = data.name;
     saveLastCity(data.name);
 }
 
-/**
- * Displays the 5-day forecast, modified to show the first 7 distinct days possible
- * @param {Object} data - Forecast data from API
- */
 function displayForecast(data) {
     forecastGrid.innerHTML = '';
     
-    // Get up to 7 daily forecasts (one per day)
+    // Extract up to 7 daily forecasts
     const dailyForecasts = [];
     const seenDates = new Set();
     
     for (let item of data.list) {
         const date = new Date(item.dt * 1000);
+        // Use a simple date string to track unique days
         const dateStr = date.toLocaleDateString('en-US', { day: 'numeric', month: 'numeric' });
         
-        // Only include the first data point for each unique date, up to 7
         if (!seenDates.has(dateStr) && dailyForecasts.length < 7) {
             seenDates.add(dateStr);
             dailyForecasts.push(item);
         }
     }
+    
+    dailyForecasts.forEach((day) => {
+        const date = new Date(day.dt * 1000);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+        const temp = Math.round(day.main.temp);
+        const tempMin = Math.round(day.main.temp_min);
+        const icon = getWeatherIcon(day.weather[0].id);
+        
+        const card = document.createElement('div');
+        card.classList.add('forecast-card');
+        card.innerHTML = `
+            <div class="day-label">${dayName}</div>
+            <div class="forecast-icon">${icon}</div>
+            <div class="temp-main">${temp}°</div>
+            <div class="temp-min">${tempMin}°</div>
+        `;
+        forecastGrid.appendChild(card);
+    });
 }
+
+// --- 5. MAIN CONTROL FLOW ---
+
+function handleSearch() {
+    const city = searchInput.value.trim();
+    
+    if (city) {
+        loadWeather(city);
+        searchInput.value = ''; 
+    } else {
+        displayError("Please enter a city name");
+    }
+}
+
+async function loadWeather(city) {
+    const currentData = await fetchCurrentWeather(city);
+    const forecastData = await fetchForecast(city);
+    
+    if (currentData) {
+        displayCurrentWeather(currentData);
+    }
+    
+    if (forecastData) {
+        displayForecast(forecastData);
+    }
+}
+
+// --- 6. EVENT LISTENERS AND INITIALIZATION ---
+
+function setupEventListeners() {
+    searchIcon.addEventListener('click', handleSearch);
+    
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
+}
+
+function initApp() {
+    setupEventListeners();
+    
+    const lastSavedCity = getLastCity();
+    const cityToLoad = lastSavedCity || currentCity;
+    
+    loadWeather(cityToLoad);
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
