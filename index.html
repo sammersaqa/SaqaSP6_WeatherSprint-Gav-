@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,15 @@
 <body>
     <div class="main-container">
         <div class="error-message" id="errorMessage"></div>
-        
+
         <header class="top-header">
             <div class="search-bar">
                 <input type="text" id="searchInput" class="search-input" placeholder="Stockton, California">
-                <img src="/assets/icons8-search-48.png" class="fa-solid fa-magnifying-glass search-icon" id="searchIcon" alt="search-icon">
+                <img src="/assets/icons8-search-48.png" class="fa-solid fa-magnifying-glass search-icon" id="searchIcon"
+                    alt="search-icon">
                 <i class="fa-solid fa-heart favorite-icon"></i>
             </div>
-            
+
         </header>
 
         <main class="weather-content-wrapper">
@@ -30,7 +32,7 @@
             <div class="weather-cards-container">
                 <div class="current-weather-card" id="currentWeatherCard">
                     <div class="location-current">
-                        <i class="fa-solid fa-location-dot"></i> 
+                        <i class="fa-solid fa-location-dot"></i>
                         <span id="locationDisplay">Loading...</span>
                     </div>
                     <div class="weather-details">
@@ -56,4 +58,5 @@
     <script type="module" src="./apps/storage.js"></script>
     <script type="module" src="./apps/apps.js"></script>
 </body>
+
 </html>
