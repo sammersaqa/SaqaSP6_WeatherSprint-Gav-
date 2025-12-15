@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherDeskV2.com</title>
+    <link rel="stylesheet" href="./styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="error-message" id="errorMessage"></div>
+        
+        <header class="top-header">
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Stockton, California">
+                <i class="fa-solid fa-magnifying-glass search-icon" id="searchIcon"></i>
+                <i class="fa-solid fa-heart favorite-icon"></i>
+            </div>
+        </header>
+
+        <main class="weather-content-wrapper">
+            <div class="section-titles">
+                <h2 class="title-current">Today's Current Weather</h2>
+                <h2 class="title-forecast">Day Weather Forecast</h2>
+            </div>
+
+            <div class="weather-cards-container">
+                <div class="current-weather-card" id="currentWeatherCard">
+                    <div class="location-current">
+                        <i class="fa-solid fa-location-dot"></i> 
+                        <span id="locationDisplay">Loading...</span>
+                    </div>
+                    <div class="weather-details">
+                        <div class="weather-icon-large" id="currentIcon">☀️</div>
+                        <div id="currentTemp">--°</div>
+                    </div>
+                    <div id="weatherInfo" class="condition-info">
+                        Loading weather data...
+                    </div>
+                    <div class="temp-extremes">
+                        <span>HI: <span id="tempHigh">--°</span></span>
+                        <span>LOW: <span id="tempLow">--°</span></span>
+                    </div>
+                </div>
+
+                <div class="forecast-grid-container" id="forecastGrid">
+                    <div class="loading">Loading forecast...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="./apps/storage.js"></script>
+    <script type="module" src="./apps/apps.js"></script>
+</body>
+</html>
