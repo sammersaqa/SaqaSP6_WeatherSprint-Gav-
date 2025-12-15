@@ -19,7 +19,7 @@ body {
     padding: 30px 20px;
     background-image: url("/assets/clouds.jpg");
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size:cover;
     margin-top: 100px;
 }
 
