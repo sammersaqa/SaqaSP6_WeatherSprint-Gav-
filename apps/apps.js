@@ -87,7 +87,11 @@ async function fetchCurrentWeather(city) {
 
 /**
  * Fetches 5-day forecast data for a given city
- * @param {string} city - City name to fetch forecast for
+ * NOTE: OpenWeather's free '/forecast' endpoint provides 5 days (40 timestamps).
+ * To get a true 7-day forecast, you would need their commercial 'onecall' endpoint
+ * or a different API. We will extract the first 7 available days from the 5-day
+ * data, which usually covers about 5-6 full days plus the current partial day.
+ * * @param {string} city - City name to fetch forecast for
  * @returns {Promise<Object|null>} Forecast data or null if error
  */
 async function fetchForecast(city) {
@@ -138,21 +142,22 @@ function displayCurrentWeather(data) {
 }
 
 /**
- * Displays the 5-day forecast
+ * Displays the 5-day forecast, modified to show the first 7 distinct days possible
  * @param {Object} data - Forecast data from API
  */
 function displayForecast(data) {
     forecastGrid.innerHTML = '';
     
-    // Get 5 daily forecasts (one per day at noon)
+    // Get up to 7 daily forecasts (one per day)
     const dailyForecasts = [];
     const seenDates = new Set();
     
     for (let item of data.list) {
         const date = new Date(item.dt * 1000);
-        const dateStr = date.toDateString();
+        const dateStr = date.toLocaleDateString('en-US', { day: 'numeric', month: 'numeric' });
         
-        if (!seenDates.has(dateStr) && dailyForecasts.length < 5) {
+        // Only include the first data point for each unique date, up to 7
+        if (!seenDates.has(dateStr) && dailyForecasts.length < 7) {
             seenDates.add(dateStr);
             dailyForecasts.push(item);
         }
@@ -160,6 +165,7 @@ function displayForecast(data) {
     
     dailyForecasts.forEach((day) => {
         const date = new Date(day.dt * 1000);
+        // Use 'ddd' (Mon, Tue, Wed...) for short weekday name
         const dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
         const temp = Math.round(day.main.temp);
         const tempMin = Math.round(day.main.temp_min);
@@ -175,6 +181,13 @@ function displayForecast(data) {
         `;
         forecastGrid.appendChild(card);
     });
+    
+    // Update the forecast title text to reflect the change
+    const forecastTitle = document.querySelector('.title-forecast');
+    if (forecastTitle) {
+        // Remove the old '5 ' content and add '7 '
+        forecastTitle.innerHTML = forecastTitle.innerHTML.replace('5 ', '7 ');
+    }
 }
 
 // --- 5. MAIN CONTROL FLOW ---

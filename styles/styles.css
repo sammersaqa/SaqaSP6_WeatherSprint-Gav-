@@ -102,12 +102,13 @@ body {
 }
 
 .title-forecast::before {
-    content: "5 ";
+    content: "7 "; 
 }
 
 /* Main Cards Container */
 .weather-content-wrapper {
     padding: 20px 0;
+    margin-left: 50px;
 }
 
 .weather-cards-container {
@@ -178,13 +179,15 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 5-Day Forecast Grid */
+/* 7-Day Forecast Grid (Default: 7 columns for large screens) */
 .forecast-grid-container {
     flex: 0 0 68%;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(7, 1fr); 
+    gap: 10px; 
+    min-height: 400px;
 }
+
 
 .forecast-card {
     background: rgba(255, 255, 255, 0.2);
@@ -248,17 +251,17 @@ body {
 }
 
 /* ===================================
-    RESPONSIVE DESIGN
+    RESPONSIVE DESIGN (Updated for 7-day view)
     =================================== */
+
+/* Medium screen (1200px and smaller): Display 5 columns */
 @media (max-width: 1200px) {
     .forecast-grid-container {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    .forecast-card:nth-child(5) {
-        display: none;
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 
+/* Tablet (950px and smaller): Stack current/forecast and display 4 columns */
 @media (max-width: 950px) {
     .weather-cards-container {
         flex-direction: column;
@@ -283,12 +286,9 @@ body {
     .forecast-grid-container {
         grid-template-columns: repeat(4, 1fr);
     }
-    
-    .forecast-card:nth-child(5) {
-        display: block;
-    }
 }
 
+/* Mobile Landscape (650px and smaller): Display 3 columns */
 @media (max-width: 650px) {
     .forecast-grid-container {
         grid-template-columns: repeat(3, 1fr);
@@ -303,6 +303,7 @@ body {
     }
 }
 
+/* Mobile Portrait (480px and smaller): Display 2 columns */
 @media (max-width: 480px) {
     .forecast-grid-container {
         grid-template-columns: repeat(2, 1fr);
