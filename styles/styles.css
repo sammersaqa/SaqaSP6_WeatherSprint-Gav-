@@ -191,6 +191,7 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr); 
     gap: 10px; 
+    margin-left: 100px;
     min-height: 400px;
 }
 
@@ -228,6 +229,7 @@ body {
 .temp-main {
     font-size: 1.4em;
     font-weight: 700;
+    margin-top: 200px;
 }
 
 .temp-min {
