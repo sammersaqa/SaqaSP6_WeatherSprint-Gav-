@@ -15,12 +15,12 @@ body {
     color: #333;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center; /* Changed from flex-start to center for better desktop centering */
     padding: 30px 20px;
     background-image: url("/assets/clouds.jpg");
     background-repeat: no-repeat;
-    background-size:cover;
-    margin-top: 100px;
+    background-size: cover;
+    /* Removed margin-top: 100px and margin-top: 200px from body/main-container for centering */
 }
 
 .main-container {
@@ -32,7 +32,6 @@ body {
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
     padding: 40px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-top: 200px;
 }
 
 /* Header/Search Bar */
@@ -122,11 +121,10 @@ body {
     display: flex;
     gap: 25px;
     justify-content: space-between;
-    background-color: #0a1f34;
+    /* Added background styles provided in your input */
     background: linear-gradient(135deg, #0e1f32 0%, #254e76 100%);
     padding: 20px;
     opacity: .75;
-    
 }
 
 /* Current Weather Card */
@@ -191,14 +189,14 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* 7-Day Forecast Grid (Default: 7 columns for large screens) */
+/* 7-Day Forecast Grid (Fixed Desktop Layout) */
 .forecast-grid-container {
     flex: 0 0 68%;
     display: grid;
     grid-template-columns: repeat(7, 1fr); 
     gap: 10px; 
-    margin-left: px;
     min-height: 400px;
+    /* Removed margin-left: px; */
 }
 
 .forecast-card {
@@ -211,7 +209,7 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 137px;
+    /* Removed fixed width, letting grid handle it: width: 137px; */
 }
 
 .forecast-card:hover {
@@ -265,60 +263,5 @@ body {
 
 /* ===================================
     RESPONSIVE DESIGN 
+    (All Media Queries Removed for Desktop-Only Requirement)
     =================================== */
-
-/* Medium screen (1200px and smaller): Display 5 columns */
-@media (max-width: 1200px) {
-    .forecast-grid-container {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-/* Tablet (950px and smaller): Stack current/forecast and display 4 columns */
-@media (max-width: 950px) {
-    .weather-cards-container {
-        flex-direction: column;
-    }
-
-    .current-weather-card,
-    .forecast-grid-container {
-        flex: 1 1 100%;
-        width: 100%;
-    }
-    
-    .section-titles {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .title-current, .title-forecast {
-        flex: 1 1 100%;
-        text-align: center;
-    }
-
-    .forecast-grid-container {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* Mobile Landscape (650px and smaller): Display 3 columns */
-@media (max-width: 650px) {
-    .forecast-grid-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .search-input {
-        width: 180px;
-    }
-
-    .main-container {
-        padding: 25px 15px;
-    }
-}
-
-/* Mobile Portrait (480px and smaller): Display 2 columns */
-@media (max-width: 480px) {
-    .forecast-grid-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
