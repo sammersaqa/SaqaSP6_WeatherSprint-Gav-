@@ -125,6 +125,7 @@ body {
     background-color: #357ABD;
     background: linear-gradient(135deg, #183351 0%, #357ABD 100%);
     padding: 20px;
+    opacity: .75;
     
 }
 
