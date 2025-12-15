@@ -67,8 +67,15 @@ body {
     outline: none;
 }
 
-.search-icon, .favorite-icon {
+.search-icon {
     color: #667eea;
+    font-size: 1.3em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.favorite-icon {
+    color: red;
     font-size: 1.3em;
     cursor: pointer;
     transition: transform 0.2s;
