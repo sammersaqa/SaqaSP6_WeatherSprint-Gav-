@@ -1,12 +1,14 @@
+// --- MAIN APPLICATION MODULE (apps/apps.js) ---
+
 import { saveLastCity, getLastCity, toggleFavorite, getFavoriteCity } from './storage.js'; 
-import { API_KEY } from './enviornment.js';
 
 // ===========================================
 // 1. CONFIGURATION & DOM ELEMENTS
 // ===========================================
 
-// IMPORTANT: Replace this with your actual OpenWeatherMap API Key
-
+// IMPORTANT: FOR TESTING ONLY: Use your actual key here. 
+// REPLACE with a placeholder (e.g., 'YOUR_API_KEY_HERE') before committing to GitHub.
+const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04'; 
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Get all necessary DOM elements
@@ -17,7 +19,7 @@ const errorMessage = document.getElementById('errorMessage');
 const searchInput = document.getElementById('searchInput');
 const searchIcon = document.getElementById('searchIcon');
 const currentIcon = document.getElementById('currentIcon');
-const favoriteIcon = document.getElementById('favoriteIcon');
+const favoriteIcon = document.getElementById('favoriteIcon'); // Added for favorite feature
 
 // Default/Fallback city
 const DEFAULT_CITY = 'Stockton';
@@ -150,7 +152,7 @@ function displayCurrentWeather(data) {
         .join(' ');
     
     // ------------------------------------------------------------------
-    // 1. POPULATE THE CURRENT WEATHER CARD
+    // 1. POPULATE THE CURRENT WEATHER CARD (FIXED SECTION)
     // ------------------------------------------------------------------
     
     locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
@@ -176,8 +178,6 @@ function displayCurrentWeather(data) {
     
     favoriteIcon.dataset.cityName = data.name; 
 }
-
-// ... rest of your file ...
 
 function displayForecast(data) {
     forecastGrid.innerHTML = '';
@@ -294,6 +294,25 @@ function getGeolocation() {
 // 6. INITIALIZATION & EVENT LISTENERS
 // ===========================================
 
+function handleFavoriteClick(e) {
+    // 1. Get the city name from the data attribute we set earlier
+    const city = favoriteIcon.dataset.cityName;
+    if (!city) return;
+
+    // 2. Check current state: if it has the class, it is currently a favorite
+    const isCurrentlyFavorite = favoriteIcon.classList.contains('is-favorite');
+
+    if (isCurrentlyFavorite) {
+        // If it is a favorite, un-favorite it
+        favoriteIcon.classList.remove('is-favorite');
+        toggleFavorite(city, false);
+    } else {
+        // If it is not a favorite, mark it as favorite
+        favoriteIcon.classList.add('is-favorite');
+        toggleFavorite(city, true);
+    }
+}
+
 function setupEventListeners() {
     searchIcon.addEventListener('click', handleSearch);
     favoriteIcon.addEventListener('click', handleFavoriteClick);
@@ -307,7 +326,7 @@ function setupEventListeners() {
 
 function initApp() {
     setupEventListeners();
-
+    
     // Start by trying to get geolocation
     getGeolocation();
 }
