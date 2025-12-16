@@ -4,7 +4,7 @@
 ## Get latest from `dotnet new gitignore`
 
 # dotenv files
-.env
+./apps/enviornment.js
 
 # User-specific files
 *.rsuser
