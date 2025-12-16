@@ -1,6 +1,6 @@
 /* ===================================
-    GLOBAL STYLES
-    =================================== */
+    GLOBAL STYLES
+    =================================== */
 * {
     margin: 0;
     padding: 0;
@@ -10,17 +10,15 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-attachment: fixed;
     color: #333;
     display: flex;
     justify-content: center;
-    align-items: center; /* Changed from flex-start to center for better desktop centering */
+    align-items: center;
     padding: 30px 20px;
     background-image: url("/assets/clouds.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    /* Removed margin-top: 100px and margin-top: 200px from body/main-container for centering */
 }
 
 .main-container {
@@ -41,13 +39,18 @@ body {
 }
 
 .search-bar {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    position: relative;
+    /* <-- CRITICAL FIX: Defines the positioning context for the dropdown */
     background: rgba(255, 255, 255, 0.9);
     border-radius: 50px;
     padding: 12px 25px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     gap: 15px;
+    /* Added to center the search bar within the main container */
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .search-input {
@@ -55,7 +58,8 @@ body {
     background: transparent;
     font-size: 1.1em;
     padding: 5px 10px;
-    width: 300px;
+    flex-grow: 1;
+    /* Makes the input fill the available space */
     color: #333;
 }
 
@@ -76,7 +80,8 @@ body {
 
 
 .favorite-icon.is-favorite {
-    color: #e74c3c; /* A nice, vibrant red for a filled heart */
+    color: #e74c3c;
+    /* A nice, vibrant red for a filled heart */
     filter: drop-shadow(0 0 5px rgba(231, 76, 60, 0.7));
 }
 
@@ -87,8 +92,45 @@ body {
     transition: transform 0.2s;
 }
 
-.search-icon:hover, .favorite-icon:hover {
+.search-icon:hover,
+.favorite-icon:hover {
     transform: scale(1.15);
+}
+
+/* --- Recent Searches Dropdown --- */
+.recent-searches-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+
+    /* Styling */
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    /* Increased border-radius for aesthetics */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    /* Start hidden */
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px 0;
+    /* Added padding to dropdown items */
+}
+
+.recent-search-item {
+    padding: 10px 30px;
+    /* Increased horizontal padding to match search bar */
+    cursor: pointer;
+    color: #333;
+    font-size: 0.9em;
+}
+
+.recent-search-item:hover {
+    background-color: #f0f0f0;
 }
 
 /* Section Titles */
@@ -99,7 +141,8 @@ body {
     padding: 0 10px;
 }
 
-.title-current, .title-forecast {
+.title-current,
+.title-forecast {
     font-size: 1.6em;
     font-weight: 600;
     color: white;
@@ -115,7 +158,7 @@ body {
 }
 
 .title-forecast::before {
-    content: "7 "; 
+    content: "7 ";
 }
 
 /* Main Cards Container */
@@ -127,11 +170,11 @@ body {
     display: flex;
     gap: 25px;
     justify-content: space-between;
-    /* Added background styles provided in your input */
     background: linear-gradient(135deg, #0e1f32 0%, #254e76 100%);
     padding: 20px;
     opacity: .75;
-    
+    border-radius: 20px;
+    /* Added border-radius for consistency */
 }
 
 /* Current Weather Card */
@@ -200,10 +243,9 @@ body {
 .forecast-grid-container {
     flex: 0 0 68%;
     display: grid;
-    grid-template-columns: repeat(7, 1fr); 
-    gap: 10px; 
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
     min-height: 400px;
-    /* Removed margin-left: px; */
 }
 
 .forecast-card {
@@ -217,6 +259,10 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
     width: 137px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Ensures content is spread top-to-bottom */
 }
 
 .forecast-card:hover {
@@ -235,13 +281,14 @@ body {
     font-size: 45px;
     margin: 10px 0;
     filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
-    
 }
 
 .temp-main {
     font-size: 1.4em;
     font-weight: 700;
-    margin-top: 200px;
+    /* Removed margin-top: 200px; to fix alignment */
+    margin-top: 10px;
+    /* Small margin for spacing */
 }
 
 .temp-min {
@@ -267,8 +314,3 @@ body {
     margin-bottom: 20px;
     display: none;
 }
-
-/* ===================================
-    RESPONSIVE DESIGN 
-    (All Media Queries Removed for Desktop-Only Requirement)
-    =================================== */

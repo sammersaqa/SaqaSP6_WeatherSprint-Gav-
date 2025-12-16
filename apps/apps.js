@@ -19,7 +19,10 @@ const errorMessage = document.getElementById('errorMessage');
 const searchInput = document.getElementById('searchInput');
 const searchIcon = document.getElementById('searchIcon');
 const currentIcon = document.getElementById('currentIcon');
-const favoriteIcon = document.getElementById('favoriteIcon'); // Added for favorite feature
+const favoriteIcon = document.getElementById('favoriteIcon');
+
+// ADDED FOR RECENT SEARCHES
+const recentSearchesDropdown = document.getElementById('recentSearchesDropdown'); 
 
 // Default/Fallback city
 const DEFAULT_CITY = 'Stockton';
@@ -151,10 +154,7 @@ function displayCurrentWeather(data) {
         .map(w => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');
     
-    // ------------------------------------------------------------------
-    // 1. POPULATE THE CURRENT WEATHER CARD (FIXED SECTION)
-    // ------------------------------------------------------------------
-    
+    // 1. POPULATE THE CURRENT WEATHER CARD
     locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
     document.getElementById('currentTemp').textContent = `${temp}°`;
     document.getElementById('tempHigh').textContent = `${tempHigh}°`;
@@ -164,9 +164,7 @@ function displayCurrentWeather(data) {
     
     saveLastCity(data.name);
 
-    // ------------------------------------------------------------------
     // 2. FAVORITE CITY LOGIC
-    // ------------------------------------------------------------------
     const favoriteCityName = getFavoriteCity();
     const isFavorite = favoriteCityName === data.name;
 
@@ -213,6 +211,35 @@ function displayForecast(data) {
             <div class="temp-min">${tempMin}°</div>
         `;
         forecastGrid.appendChild(card);
+    });
+}
+
+/**
+ * Renders recent search history items into the dropdown.
+ */
+function renderRecentSearches() {
+    recentSearchesDropdown.innerHTML = '';
+    
+    // Create a list of cities to display (last city and default city)
+    const suggestions = new Set();
+    const lastCity = getLastCity();
+    
+    if (lastCity) {
+        suggestions.add(lastCity);
+    }
+    suggestions.add(DEFAULT_CITY);
+
+    suggestions.forEach(city => {
+        const item = document.createElement('div');
+        item.classList.add('recent-search-item');
+        item.textContent = city;
+        item.addEventListener('click', () => {
+            // Load the city when clicked
+            loadWeatherData(city);
+            // Close the dropdown immediately
+            recentSearchesDropdown.style.display = 'none';
+        });
+        recentSearchesDropdown.appendChild(item);
     });
 }
 
@@ -321,6 +348,19 @@ function setupEventListeners() {
         if (e.key === 'Enter') {
             handleSearch();
         }
+    });
+
+    // --- DROPDOWN LOGIC START ---
+    searchInput.addEventListener('focus', () => {
+        renderRecentSearches();
+        recentSearchesDropdown.style.display = 'block';
+    });
+
+    // Use a small delay for 'blur' to allow click events on the dropdown items to register
+    searchInput.addEventListener('blur', () => {
+        setTimeout(() => {
+            recentSearchesDropdown.style.display = 'none';
+        }, 200);
     });
 }
 
