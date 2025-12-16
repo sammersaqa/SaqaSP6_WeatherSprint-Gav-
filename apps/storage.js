@@ -49,4 +49,3 @@ export function toggleFavorite(city, isFavorite) {
         }
     }
 }
-// Note: You must update your apps.js imports to use saveCityToRecents and getRecentCities
