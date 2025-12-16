@@ -121,18 +121,39 @@ body {
     /* Added padding to dropdown items */
 }
 
+/* ADDED FOR RECENT SEARCHES FAVORITE TOGGLE */
+
 .recent-search-item {
-    padding: 10px 30px;
-    /* Increased horizontal padding to match search bar */
+    display: flex; /* Makes the content and icon align horizontally */
+    justify-content: space-between; /* Pushes the icon to the right */
+    align-items: center;
+    /* (Keep your existing padding, hover, etc. styles) */
+}
+
+.dropdown-city-text {
+    /* Ensures the city name takes up most of the space */
+    flex-grow: 1; 
     cursor: pointer;
-    color: #333;
-    font-size: 0.9em;
 }
 
-.recent-search-item:hover {
-    background-color: #f0f0f0;
+.dropdown-favorite-icon {
+    font-size: 1.1em;
+    color: #ccc; /* Default color for unfavorited */
+    cursor: pointer;
+    margin-left: 10px; /* Separator space */
+    transition: color 0.2s;
 }
 
+/* Style for when the dropdown icon IS favorited */
+.dropdown-favorite-icon.is-favorite {
+    color: #e74c3c; 
+    filter: drop-shadow(0 0 3px rgba(231, 76, 60, 0.5));
+}
+
+/* Shows a subtle color when the user hovers over the icon area, even if not favorited */
+.recent-search-item:hover .dropdown-favorite-icon:not(.is-favorite) {
+    color: #999;
+}
 /* Section Titles */
 .section-titles {
     display: flex;

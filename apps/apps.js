@@ -1,6 +1,7 @@
 // --- MAIN APPLICATION MODULE (apps/apps.js) ---
 
-import { saveLastCity, getLastCity, toggleFavorite, getFavoriteCity } from './storage.js'; 
+// UPDATED IMPORTS: Removing saveLastCity, getLastCity, adding getRecentCities, saveCityToRecents
+import { saveCityToRecents, getRecentCities, toggleFavorite, getFavoriteCity } from './storage.js';
 
 // ===========================================
 // 1. CONFIGURATION & DOM ELEMENTS
@@ -8,7 +9,7 @@ import { saveLastCity, getLastCity, toggleFavorite, getFavoriteCity } from './st
 
 // IMPORTANT: FOR TESTING ONLY: Use your actual key here. 
 // REPLACE with a placeholder (e.g., 'YOUR_API_KEY_HERE') before committing to GitHub.
-const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04'; 
+const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Get all necessary DOM elements
@@ -22,7 +23,7 @@ const currentIcon = document.getElementById('currentIcon');
 const favoriteIcon = document.getElementById('favoriteIcon');
 
 // ADDED FOR RECENT SEARCHES
-const recentSearchesDropdown = document.getElementById('recentSearchesDropdown'); 
+const recentSearchesDropdown = document.getElementById('recentSearchesDropdown');
 
 // Default/Fallback city
 const DEFAULT_CITY = 'Stockton';
@@ -147,13 +148,13 @@ function displayCurrentWeather(data) {
     const temp = Math.round(data.main.temp);
     const tempHigh = Math.round(data.main.temp_max);
     const tempLow = Math.round(data.main.temp_min);
-    
+
     // Capitalize the first letter of each word in the description
     const condition = data.weather[0].description
         .split(' ')
         .map(w => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');
-    
+
     // 1. POPULATE THE CURRENT WEATHER CARD
     locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
     document.getElementById('currentTemp').textContent = `${temp}°`;
@@ -161,8 +162,9 @@ function displayCurrentWeather(data) {
     document.getElementById('tempLow').textContent = `${tempLow}°`;
     weatherInfo.textContent = condition;
     currentIcon.textContent = getWeatherIcon(data.weather[0].id);
-    
-    saveLastCity(data.name);
+
+    // UPDATED: Save the city to the list of recent searches
+    saveCityToRecents(data.name);
 
     // 2. FAVORITE CITY LOGIC
     const favoriteCityName = getFavoriteCity();
@@ -173,8 +175,8 @@ function displayCurrentWeather(data) {
     } else {
         favoriteIcon.classList.remove('is-favorite');
     }
-    
-    favoriteIcon.dataset.cityName = data.name; 
+
+    favoriteIcon.dataset.cityName = data.name;
 }
 
 function displayForecast(data) {
@@ -215,30 +217,55 @@ function displayForecast(data) {
 }
 
 /**
- * Renders recent search history items into the dropdown.
+ * Renders recent search history items into the dropdown with favorite icons.
  */
 function renderRecentSearches() {
     recentSearchesDropdown.innerHTML = '';
-    
-    // Create a list of cities to display (last city and default city)
-    const suggestions = new Set();
-    const lastCity = getLastCity();
-    
-    if (lastCity) {
-        suggestions.add(lastCity);
-    }
-    suggestions.add(DEFAULT_CITY);
 
-    suggestions.forEach(city => {
+    // 1. Get the list of recent cities (up to 5)
+    const recentCities = getRecentCities();
+
+    // 2. Get the current favorite city
+    const favoriteCityName = getFavoriteCity();
+
+    if (recentCities.length === 0) {
+        // If no recent searches, add the default city
+        recentCities.push(DEFAULT_CITY);
+    }
+
+    recentCities.forEach(city => {
+        const isFavorite = favoriteCityName === city;
+
         const item = document.createElement('div');
         item.classList.add('recent-search-item');
-        item.textContent = city;
-        item.addEventListener('click', () => {
-            // Load the city when clicked
-            loadWeatherData(city);
-            // Close the dropdown immediately
-            recentSearchesDropdown.style.display = 'none';
+        item.dataset.cityName = city; // Store the city name
+
+        // City Name Text
+        const cityText = document.createElement('span');
+        cityText.textContent = city;
+        cityText.classList.add('dropdown-city-text');
+
+        // Favorite Icon
+        const favIcon = document.createElement('i');
+        favIcon.classList.add('fa-solid', 'fa-heart', 'dropdown-favorite-icon');
+        if (isFavorite) {
+            favIcon.classList.add('is-favorite');
+        }
+
+        // Click handler for the whole item (loads the weather)
+        item.addEventListener('click', (e) => {
+            // Check if the click target was the icon
+            if (!e.target.classList.contains('dropdown-favorite-icon')) {
+                loadWeatherData(city);
+                recentSearchesDropdown.style.display = 'none';
+            }
         });
+
+        // Click handler for the favorite icon (toggles favorite status)
+        favIcon.addEventListener('click', handleDropdownFavoriteClick);
+
+        item.appendChild(cityText);
+        item.appendChild(favIcon);
         recentSearchesDropdown.appendChild(item);
     });
 }
@@ -304,14 +331,22 @@ function getGeolocation() {
             (error) => {
                 // Error/Denied: Fallback to last saved city
                 console.warn(`Geolocation failed: ${error.message}. Falling back to saved city.`);
-                const cityToLoad = getLastCity() || DEFAULT_CITY;
+
+                // UPDATED: Load the first city from recents or the default city
+                const recentCities = getRecentCities();
+                const cityToLoad = recentCities.length > 0 ? recentCities[0] : DEFAULT_CITY;
+
                 loadWeatherData(cityToLoad);
             }
         );
     } else {
         // Unsupported: Fallback to last saved city
         displayError("Geolocation is not supported by this browser. Using last saved city.");
-        const cityToLoad = getLastCity() || DEFAULT_CITY;
+
+        // UPDATED: Load the first city from recents or the default city
+        const recentCities = getRecentCities();
+        const cityToLoad = recentCities.length > 0 ? recentCities[0] : DEFAULT_CITY;
+
         loadWeatherData(cityToLoad);
     }
 }
@@ -322,23 +357,56 @@ function getGeolocation() {
 // ===========================================
 
 function handleFavoriteClick(e) {
-    // 1. Get the city name from the data attribute we set earlier
     const city = favoriteIcon.dataset.cityName;
     if (!city) return;
 
-    // 2. Check current state: if it has the class, it is currently a favorite
     const isCurrentlyFavorite = favoriteIcon.classList.contains('is-favorite');
 
+    // Toggle favorite status
+    toggleFavorite(city, !isCurrentlyFavorite);
+
+    // Update the UI on the main card
     if (isCurrentlyFavorite) {
-        // If it is a favorite, un-favorite it
         favoriteIcon.classList.remove('is-favorite');
-        toggleFavorite(city, false);
     } else {
-        // If it is not a favorite, mark it as favorite
         favoriteIcon.classList.add('is-favorite');
-        toggleFavorite(city, true);
+    }
+
+    // Since favorite status has changed, re-render the dropdown if it's open
+    if (recentSearchesDropdown.style.display === 'block') {
+        renderRecentSearches();
     }
 }
+
+/**
+ * Handles clicks on the small favorite icon inside the recent searches dropdown.
+ */
+function handleDropdownFavoriteClick(e) {
+    e.stopPropagation(); // Prevent the click from bubbling up and loading the city
+
+    const favIcon = e.currentTarget;
+    const item = favIcon.closest('.recent-search-item');
+    const city = item.dataset.cityName;
+
+    const isCurrentlyFavorite = favIcon.classList.contains('is-favorite');
+
+    // 1. Toggle favorite status in storage
+    toggleFavorite(city, !isCurrentlyFavorite);
+
+    // 2. Update UI: Re-render the entire dropdown to update all icons correctly
+    renderRecentSearches();
+
+    // 3. If the newly favorited/unfavorited city is the one currently displayed,
+    // update the main heart icon as well.
+    if (favoriteIcon.dataset.cityName === city) {
+        if (!isCurrentlyFavorite) {
+            favoriteIcon.classList.add('is-favorite');
+        } else {
+            favoriteIcon.classList.remove('is-favorite');
+        }
+    }
+}
+
 
 function setupEventListeners() {
     searchIcon.addEventListener('click', handleSearch);
@@ -356,17 +424,18 @@ function setupEventListeners() {
         recentSearchesDropdown.style.display = 'block';
     });
 
-    // Use a small delay for 'blur' to allow click events on the dropdown items to register
     searchInput.addEventListener('blur', () => {
+        // Use a small delay for 'blur' to allow click events on the dropdown items to register
         setTimeout(() => {
             recentSearchesDropdown.style.display = 'none';
         }, 200);
     });
+    // --- DROPDOWN LOGIC END ---
 }
 
 function initApp() {
     setupEventListeners();
-    
+
     // Start by trying to get geolocation
     getGeolocation();
 }
