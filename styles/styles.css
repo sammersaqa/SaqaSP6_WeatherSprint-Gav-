@@ -286,15 +286,13 @@ body {
 .temp-main {
     font-size: 1.4em;
     font-weight: 700;
-    /* Removed margin-top: 200px; to fix alignment */
-    margin-top: 10px;
-    /* Small margin for spacing */
+    margin-top: 100px;
 }
 
 .temp-min {
     font-size: 1em;
     opacity: 0.8;
-    margin-top: 5px;
+    margin-bottom: 50px;
 }
 
 /* Loading and Error States */
