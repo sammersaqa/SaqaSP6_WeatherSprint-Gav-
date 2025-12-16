@@ -74,6 +74,12 @@ body {
     transition: transform 0.2s;
 }
 
+
+.favorite-icon.is-favorite {
+    color: #e74c3c; /* A nice, vibrant red for a filled heart */
+    filter: drop-shadow(0 0 5px rgba(231, 76, 60, 0.7));
+}
+
 .favorite-icon {
     color: red;
     font-size: 1.3em;

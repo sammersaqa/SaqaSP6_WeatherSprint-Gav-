@@ -1,4 +1,4 @@
-import { saveLastCity, getLastCity } from './storage.js';
+import { saveLastCity, getLastCity, toggleFavorite, getFavoriteCity } from './storage.js'; 
 import { API_KEY } from './enviornment.js';
 
 // ===========================================
@@ -17,6 +17,7 @@ const errorMessage = document.getElementById('errorMessage');
 const searchInput = document.getElementById('searchInput');
 const searchIcon = document.getElementById('searchIcon');
 const currentIcon = document.getElementById('currentIcon');
+const favoriteIcon = document.getElementById('favoriteIcon');
 
 // Default/Fallback city
 const DEFAULT_CITY = 'Stockton';
@@ -141,22 +142,42 @@ function displayCurrentWeather(data) {
     const temp = Math.round(data.main.temp);
     const tempHigh = Math.round(data.main.temp_max);
     const tempLow = Math.round(data.main.temp_min);
-
+    
     // Capitalize the first letter of each word in the description
     const condition = data.weather[0].description
         .split(' ')
         .map(w => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');
-
+    
+    // ------------------------------------------------------------------
+    // 1. POPULATE THE CURRENT WEATHER CARD
+    // ------------------------------------------------------------------
+    
     locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
     document.getElementById('currentTemp').textContent = `${temp}°`;
     document.getElementById('tempHigh').textContent = `${tempHigh}°`;
     document.getElementById('tempLow').textContent = `${tempLow}°`;
     weatherInfo.textContent = condition;
     currentIcon.textContent = getWeatherIcon(data.weather[0].id);
-
+    
     saveLastCity(data.name);
+
+    // ------------------------------------------------------------------
+    // 2. FAVORITE CITY LOGIC
+    // ------------------------------------------------------------------
+    const favoriteCityName = getFavoriteCity();
+    const isFavorite = favoriteCityName === data.name;
+
+    if (isFavorite) {
+        favoriteIcon.classList.add('is-favorite');
+    } else {
+        favoriteIcon.classList.remove('is-favorite');
+    }
+    
+    favoriteIcon.dataset.cityName = data.name; 
 }
+
+// ... rest of your file ...
 
 function displayForecast(data) {
     forecastGrid.innerHTML = '';
@@ -275,6 +296,7 @@ function getGeolocation() {
 
 function setupEventListeners() {
     searchIcon.addEventListener('click', handleSearch);
+    favoriteIcon.addEventListener('click', handleFavoriteClick);
 
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
