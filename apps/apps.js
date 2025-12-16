@@ -5,7 +5,7 @@ import { saveLastCity, getLastCity } from './storage.js';
 // ===========================================
 
 // IMPORTANT: Replace this with your actual OpenWeatherMap API Key
-const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
+// const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
 // Get all necessary DOM elements
