@@ -2,7 +2,6 @@
 
 // UPDATED IMPORTS: Removing saveLastCity, getLastCity, adding getRecentCities, saveCityToRecents
 import { saveCityToRecents, getRecentCities, toggleFavorite, getFavoriteCity } from './storage.js';
-
 // ===========================================
 // 1. CONFIGURATION & DOM ELEMENTS
 // ===========================================
@@ -292,7 +291,7 @@ async function loadWeatherData(city) {
 }
 
 function handleSearch() {
-    const city = searchInput.value.trim();
+    const city = searchInput.value.trim().replace(/[^a-zA-Z0-9,\s]/g, '');
 
     if (city) {
         loadWeatherData(city);
@@ -356,6 +355,7 @@ function getGeolocation() {
 // 6. INITIALIZATION & EVENT LISTENERS
 // ===========================================
 
+// Located in Section 6: INITIALIZATION & EVENT LISTENERS
 function handleFavoriteClick(e) {
     const city = favoriteIcon.dataset.cityName;
     if (!city) return;
@@ -364,7 +364,7 @@ function handleFavoriteClick(e) {
 
     // Toggle favorite status
     toggleFavorite(city, !isCurrentlyFavorite);
-
+    
     // Update the UI on the main card
     if (isCurrentlyFavorite) {
         favoriteIcon.classList.remove('is-favorite');
@@ -372,7 +372,6 @@ function handleFavoriteClick(e) {
         favoriteIcon.classList.add('is-favorite');
     }
 
-    // Since favorite status has changed, re-render the dropdown if it's open
     if (recentSearchesDropdown.style.display === 'block') {
         renderRecentSearches();
     }
