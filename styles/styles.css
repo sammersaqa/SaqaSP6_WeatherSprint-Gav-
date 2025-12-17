@@ -156,7 +156,10 @@ body {
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     padding-top: 15px;
-    margin-top: 50px;
+    margin-top: 80px;
+    margin-left: 10px;
+    text-align: center;
+    
 }
 
 .title-forecast::before {
@@ -186,6 +189,7 @@ body {
     justify-content: space-between;
     min-height: 400px;
     opacity: .7;
+    
 }
 
 .location-current {
@@ -197,6 +201,7 @@ body {
     font-weight: 500;
     margin-bottom: 20px;
     width: 500px;
+    
 }
 
 .weather-details {
