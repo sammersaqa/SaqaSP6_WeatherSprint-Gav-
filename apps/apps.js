@@ -168,7 +168,7 @@ function displayCurrentWeather(data, state) {
     // UPDATED: Use the state name if it exists
     const locationSuffix = state ? state : data.sys.country;
     locationDisplay.textContent = `${data.name}, ${locationSuffix}`;
-    
+
     document.getElementById('currentTemp').textContent = `${temp}°`;
     document.getElementById('tempHigh').textContent = `${tempHigh}°`;
     document.getElementById('tempLow').textContent = `${tempLow}°`;
@@ -322,7 +322,7 @@ function getGeolocation() {
         // Request the current position
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                
+
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
 
