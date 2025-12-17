@@ -1,10 +1,8 @@
 import { saveCityToRecents, getRecentCities, toggleFavorite, getFavoriteCity } from './storage.js';
 
-// --- CONFIG ---
 const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
-// DOM STUFF
 const locationDisplay = document.getElementById('locationDisplay');
 const weatherInfo = document.getElementById('weatherInfo');
 const forecastGrid = document.getElementById('forecastGrid');
@@ -17,7 +15,6 @@ const recentSearchesDropdown = document.getElementById('recentSearchesDropdown')
 
 const DEFAULT_CITY = 'Stockton';
 
-// pick the right emoji for the weather code
 function getWeatherIcon(code) {
     if (code >= 200 && code < 300) return '⛈️';
     if (code >= 300 && code < 400) return '🌦️';
@@ -34,10 +31,9 @@ function getWeatherIcon(code) {
 function displayError(message) {
     errorMessage.textContent = message;
     errorMessage.style.display = 'block';
-    setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
+    setTimeout(() => errorMessage.style.display = 'none', 5000);
 }
 
-// helper to get the state abbreviation from lat/lon
 async function getState(lat, lon) {
     try {
         const geoUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`;
@@ -49,7 +45,6 @@ async function getState(lat, lon) {
     }
 }
 
-// gets current weather data
 async function fetchCurrentWeather(city) {
     try {
         errorMessage.style.display = 'none';
@@ -66,10 +61,8 @@ async function fetchCurrentWeather(city) {
     }
 }
 
-// gets the 5 day forecast
 async function fetchForecast(lat, lon) { 
     try {
-        // Updated URL to use lat/lon so it doesn't get confused with Ohio
         const url = `${BASE_URL}forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error("Forecast failed");
@@ -79,7 +72,6 @@ async function fetchForecast(lat, lon) {
     }
 }
 
-// gets weather if we have lat/lon
 async function fetchWeatherByCoords(lat, lon) {
     try {
         const url = `${BASE_URL}weather?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`;
@@ -91,20 +83,17 @@ async function fetchWeatherByCoords(lat, lon) {
     }
 }
 
-// renders the main card
 function displayCurrentWeather(data, state) {
     const temp = Math.round(data.main.temp);
     const high = Math.round(data.main.temp_max);
     const low = Math.round(data.main.temp_min);
 
-    // format the description string
     const condition = data.weather[0].description
         .split(' ')
         .map(w => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');
 
-    // update UI text
-    const place = state ? state : data.sys.country;
+    const place = state || data.sys.country;
     locationDisplay.textContent = `${data.name}, ${place}`;
 
     document.getElementById('currentTemp').textContent = `${temp}°`;
@@ -115,13 +104,11 @@ function displayCurrentWeather(data, state) {
 
     saveCityToRecents(data.name);
 
-    // favorite heart logic
     const favName = getFavoriteCity();
     favoriteIcon.classList.toggle('is-favorite', favName === data.name);
     favoriteIcon.dataset.cityName = data.name;
 }
 
-// renders the bottom grid
 function displayForecast(data) {
     forecastGrid.innerHTML = '';
     const days = [];
@@ -153,7 +140,6 @@ function displayForecast(data) {
     });
 }
 
-// search history dropdown
 function renderRecentSearches() {
     recentSearchesDropdown.innerHTML = '';
     let cities = getRecentCities();
@@ -182,16 +168,16 @@ function renderRecentSearches() {
     });
 }
 
-// logic to load all data for a city
 async function loadWeatherData(city) {
     const cur = await fetchCurrentWeather(city);
-    const fore = await fetchForecast(city);
-
+    
     if (cur) {
         const stateName = await getState(cur.coord.lat, cur.coord.lon);
+        const fore = await fetchForecast(cur.coord.lat, cur.coord.lon);
+        
         displayCurrentWeather(cur, stateName);
+        if (fore) displayForecast(fore);
     }
-    if (fore) displayForecast(fore);
 }
 
 function handleSearch() {
@@ -209,23 +195,16 @@ function getGeolocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude } = pos.coords;
-            
-            // 1. Get current weather by coords
             const cur = await fetchWeatherByCoords(latitude, longitude);
 
             if (cur) {
-                // 2. GET FORECAST BY COORDS (Fixes the Ohio issue)
-                const fore = await fetchForecast(latitude, longitude); 
-                
-                // 3. Get the state name
+                const fore = await fetchForecast(latitude, longitude);
                 const st = await getState(latitude, longitude);
                 
-                // 4. Show everything on screen
                 displayCurrentWeather(cur, st);
                 if (fore) displayForecast(fore);
             }
         }, () => {
-            // Fallback if they block GPS
             loadWeatherData(DEFAULT_CITY);
         });
     } else {
@@ -233,22 +212,27 @@ function getGeolocation() {
     }
 }
 
-// event handlers
 function handleFavoriteClick() {
     const city = favoriteIcon.dataset.cityName;
     if (!city) return;
+    
     const isFav = favoriteIcon.classList.contains('is-favorite');
     toggleFavorite(city, !isFav);
     favoriteIcon.classList.toggle('is-favorite');
-    if (recentSearchesDropdown.style.display === 'block') renderRecentSearches();
+    
+    if (recentSearchesDropdown.style.display === 'block') {
+        renderRecentSearches();
+    }
 }
 
 function handleDropdownFavoriteClick(e) {
     e.stopPropagation();
     const city = e.target.closest('.recent-search-item').dataset.cityName;
     const isFav = e.target.classList.contains('is-favorite');
+    
     toggleFavorite(city, !isFav);
     renderRecentSearches();
+    
     if (favoriteIcon.dataset.cityName === city) {
         favoriteIcon.classList.toggle('is-favorite', !isFav);
     }
@@ -257,7 +241,9 @@ function handleDropdownFavoriteClick(e) {
 function setupEventListeners() {
     searchIcon.addEventListener('click', handleSearch);
     favoriteIcon.addEventListener('click', handleFavoriteClick);
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSearch(); });
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSearch();
+    });
 
     searchInput.addEventListener('focus', () => {
         renderRecentSearches();
@@ -265,10 +251,9 @@ function setupEventListeners() {
     });
 
     searchInput.addEventListener('blur', () => {
-        setTimeout(() => { recentSearchesDropdown.style.display = 'none'; }, 200);
+        setTimeout(() => recentSearchesDropdown.style.display = 'none', 200);
     });
 }
 
-// START APP
 setupEventListeners();
 getGeolocation();
