@@ -429,7 +429,7 @@ function setupEventListeners() {
             recentSearchesDropdown.style.display = 'none';
         }, 200);
     });
-    // --- DROPDOWN LOGIC END ---
+ 
 }
 
 function initApp() {
