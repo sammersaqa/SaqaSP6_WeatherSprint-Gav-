@@ -67,9 +67,10 @@ async function fetchCurrentWeather(city) {
 }
 
 // gets the 5 day forecast
-async function fetchForecast(city) {
+async function fetchForecast(lat, lon) { 
     try {
-        const url = `${BASE_URL}forecast?q=${city}&units=imperial&appid=${API_KEY}`;
+        // Updated URL to use lat/lon so it doesn't get confused with Ohio
+        const url = `${BASE_URL}forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error("Forecast failed");
         return await response.json();
@@ -208,16 +209,24 @@ function getGeolocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude } = pos.coords;
+            
+            // 1. Get current weather by coords
             const cur = await fetchWeatherByCoords(latitude, longitude);
 
             if (cur) {
-                const fore = await fetchForecast(cur.name);
+                // 2. GET FORECAST BY COORDS (Fixes the Ohio issue)
+                const fore = await fetchForecast(latitude, longitude); 
+                
+                // 3. Get the state name
                 const st = await getState(latitude, longitude);
+                
+                // 4. Show everything on screen
                 displayCurrentWeather(cur, st);
                 if (fore) displayForecast(fore);
             }
         }, () => {
-            loadWeatherData(getRecentCities()[0] || DEFAULT_CITY);
+            // Fallback if they block GPS
+            loadWeatherData(DEFAULT_CITY);
         });
     } else {
         loadWeatherData(DEFAULT_CITY);
