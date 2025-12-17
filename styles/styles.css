@@ -16,7 +16,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 30px 20px;
-    background-image: url("/assets/clouds.jpg");
+    background-image: url("/assets/a\ 4K-resolution\ sky\ .png");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center bottom;
@@ -57,7 +57,9 @@ body {
 .search-input {
     border: none;
     background: transparent;
-    font-size: 1.1em;
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: 800;
     padding: 5px 10px;
     flex-grow: 1;
     /* Makes the input fill the available space */
@@ -210,7 +212,7 @@ body {
 
 /* Current Weather Card - NOW STANDALONE */
 .current-weather-card {
-    background: rgba(19, 93, 178, 0.6);
+    background-image: url("/assets/bluebackground.jpg");
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     padding: 35px 25px;
@@ -274,7 +276,9 @@ body {
 /* 7-Day Forecast Container - WITH GRADIENT */
 .forecast-grid-container {
     flex: 0 0 68%;
-    background: linear-gradient(135deg, #0e1f32 0%, #254e76 100%);
+    background-image: url("/assets/cloudlyskyimage.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     padding: 15px;
     opacity: .75;
     border-radius: 20px;
@@ -285,13 +289,12 @@ body {
 }
 
 .forecast-card {
-    background: linear-gradient(135deg, rgba(100, 100, 100, 0.8) 0%, rgba(60, 60, 60, 0.9) 100%);
+    background-image: url("/assets/greybackground.jpg");
     backdrop-filter: blur(10px);
     color: white;
     border-radius: 15px;
     padding: 20px 10px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
     width: 137px;
