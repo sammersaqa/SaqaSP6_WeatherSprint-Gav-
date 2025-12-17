@@ -211,6 +211,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     min-height: 400px;
+    opacity: .7;
 }
 
 .location-current {

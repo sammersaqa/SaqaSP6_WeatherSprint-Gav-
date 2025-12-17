@@ -301,17 +301,13 @@ function handleSearch() {
     }
 }
 
-/**
- * Requests user permission for location and fetches weather based on coordinates,
- * with fallback to the last saved city if permission is denied.
- */
 function getGeolocation() {
     locationDisplay.textContent = "Locating you...";
     if (navigator.geolocation) {
         // Request the current position
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                // Success: Fetch weather by coordinates
+                
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
 
@@ -364,7 +360,7 @@ function handleFavoriteClick(e) {
 
     // Toggle favorite status
     toggleFavorite(city, !isCurrentlyFavorite);
-    
+
     // Update the UI on the main card
     if (isCurrentlyFavorite) {
         favoriteIcon.classList.remove('is-favorite');
@@ -417,25 +413,25 @@ function setupEventListeners() {
         }
     });
 
-    // --- DROPDOWN LOGIC START ---
+
     searchInput.addEventListener('focus', () => {
         renderRecentSearches();
         recentSearchesDropdown.style.display = 'block';
     });
 
     searchInput.addEventListener('blur', () => {
-        // Use a small delay for 'blur' to allow click events on the dropdown items to register
+
         setTimeout(() => {
             recentSearchesDropdown.style.display = 'none';
         }, 200);
     });
- 
+
 }
 
 function initApp() {
     setupEventListeners();
 
-    // Start by trying to get geolocation
+
     getGeolocation();
 }
 
