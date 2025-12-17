@@ -1,13 +1,7 @@
-// --- MAIN APPLICATION MODULE (apps/apps.js) ---
-
-// UPDATED IMPORTS: Removing saveLastCity, getLastCity, adding getRecentCities, saveCityToRecents
 import { saveCityToRecents, getRecentCities, toggleFavorite, getFavoriteCity } from './storage.js';
 // ===========================================
 // 1. CONFIGURATION & DOM ELEMENTS
 // ===========================================
-
-// IMPORTANT: FOR TESTING ONLY: Use your actual key here. 
-// REPLACE with a placeholder (e.g., 'YOUR_API_KEY_HERE') before committing to GitHub.
 const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
 
@@ -65,6 +59,22 @@ function clearError() {
 // ===========================================
 // 3. API FETCHING LOGIC
 // ===========================================
+
+/**
+ * NEW: Fetches the State name (e.g., CA) using Geocoding API.
+ */
+async function fetchStateName(lat, lon) {
+    try {
+        const url = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        // Return state for US, or country if state isn't available
+        return data[0]?.state || data[0]?.country || "";
+    } catch (error) {
+        console.error("Geocoding error:", error);
+        return "";
+    }
+}
 
 /**
  * Fetches current weather data for a given city name.
@@ -143,7 +153,7 @@ async function fetchWeatherByCoords(lat, lon) {
 // 4. DATA RENDERING
 // ===========================================
 
-function displayCurrentWeather(data) {
+function displayCurrentWeather(data, state) {
     const temp = Math.round(data.main.temp);
     const tempHigh = Math.round(data.main.temp_max);
     const tempLow = Math.round(data.main.temp_min);
@@ -155,7 +165,10 @@ function displayCurrentWeather(data) {
         .join(' ');
 
     // 1. POPULATE THE CURRENT WEATHER CARD
-    locationDisplay.textContent = `${data.name}, ${data.sys.country}`;
+    // UPDATED: Use the state name if it exists
+    const locationSuffix = state ? state : data.sys.country;
+    locationDisplay.textContent = `${data.name}, ${locationSuffix}`;
+    
     document.getElementById('currentTemp').textContent = `${temp}°`;
     document.getElementById('tempHigh').textContent = `${tempHigh}°`;
     document.getElementById('tempLow').textContent = `${tempLow}°`;
@@ -282,7 +295,9 @@ async function loadWeatherData(city) {
     const forecastData = await fetchForecast(city);
 
     if (currentData) {
-        displayCurrentWeather(currentData);
+        // UPDATED: Get the state name using coordinates from the weather data
+        const state = await fetchStateName(currentData.coord.lat, currentData.coord.lon);
+        displayCurrentWeather(currentData, state);
     }
 
     if (forecastData) {
@@ -316,8 +331,9 @@ function getGeolocation() {
                 if (currentData) {
                     // Use the city name from currentData to fetch forecast
                     const forecastData = await fetchForecast(currentData.name);
+                    const state = await fetchStateName(lat, lon);
 
-                    displayCurrentWeather(currentData);
+                    displayCurrentWeather(currentData, state);
                     if (forecastData) {
                         displayForecast(forecastData);
                     }
@@ -392,7 +408,6 @@ function handleDropdownFavoriteClick(e) {
     renderRecentSearches();
 
     // 3. If the newly favorited/unfavorited city is the one currently displayed,
-    // update the main heart icon as well.
     if (favoriteIcon.dataset.cityName === city) {
         if (!isCurrentlyFavorite) {
             favoriteIcon.classList.add('is-favorite');
