@@ -181,12 +181,40 @@ async function loadWeatherData(city) {
 }
 
 function handleSearch() {
-    const val = searchInput.value.trim().replace(/[^a-zA-Z0-9,\s]/g, '');
-    if (val) {
-        loadWeatherData(val);
-        searchInput.value = '';
+    const input = searchInput.value.trim();
+    
+    if (!input) {
+        displayError("Please enter a city or lat, lon");
+        return;
+    }
+
+    // Check if input is "latitude, longitude" (numbers and a comma)
+    const coordPattern = /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/;
+    
+    if (coordPattern.test(input)) {
+        // If it matches, split the numbers
+        const [lat, lon] = input.split(',').map(num => num.trim());
+        loadWeatherDataByCoords(lat, lon);
     } else {
-        displayError("Please enter a city name");
+        // Otherwise, treat it as a city name search
+        const city = input.replace(/[^a-zA-Z0-9,\s]/g, '');
+        loadWeatherData(city);
+    }
+    
+    searchInput.value = '';
+}
+
+// New function specifically for when someone types lat/lon in the search bar
+async function loadWeatherDataByCoords(lat, lon) {
+    const cur = await fetchWeatherByCoords(lat, lon);
+    const fore = await fetchForecast(lat, lon); // Use your updated forecast function
+    const st = await getState(lat, lon);
+
+    if (cur) {
+        displayCurrentWeather(cur, st);
+    }
+    if (fore) {
+        displayForecast(fore);
     }
 }
 
