@@ -1,9 +1,10 @@
 // apps.js
+
 import {
     saveCityToRecents,
     getRecentCities,
     toggleFavorite,
-    isCityFavorite
+    isCityFavorite 
 } from './storage.js';
 
 const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
@@ -102,9 +103,9 @@ function displayCurrentWeather(data, state) {
     const place = state || data.sys.country;
     locationDisplay.textContent = `${data.name}, ${place}`;
 
-    document.getElementById('currentTemp').textContent = `${temp}°`;
-    document.getElementById('tempHigh').textContent = `${high}°`;
-    document.getElementById('tempLow').textContent = `${low}°`;
+    document.getElementById('currentTemp').textContent = `${temp}°F`;
+    document.getElementById('tempHigh').textContent = `${high}°F`;
+    document.getElementById('tempLow').textContent = `${low}°F`;
     weatherInfo.textContent = condition;
     currentIcon.textContent = getWeatherIcon(data.weather[0].id);
 
@@ -158,7 +159,7 @@ function renderRecentSearches() {
         item.dataset.cityName = city;
 
         item.innerHTML = `
-            <span class="dropdown-city-text">${city}</span>
+            <p class="dropdown-city-text">${city}</p>
             <i class="fa-solid fa-heart dropdown-favorite-icon ${isFav ? 'is-favorite' : ''}"></i>
         `;
 
