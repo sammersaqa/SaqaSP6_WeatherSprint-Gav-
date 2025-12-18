@@ -1,4 +1,11 @@
-import { saveCityToRecents, getRecentCities, toggleFavorite, getFavoriteCity } from './storage.js';
+// apps.js
+import {
+    saveCityToRecents,
+    getRecentCities,
+    toggleFavorite,
+    getFavoriteCities,
+    isCityFavorite
+} from './storage.js';
 
 const API_KEY = 'e49c5df5ed882ea60e4603c9123e0d04';
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/';
@@ -61,7 +68,7 @@ async function fetchCurrentWeather(city) {
     }
 }
 
-async function fetchForecast(lat, lon) { 
+async function fetchForecast(lat, lon) {
     try {
         const url = `${BASE_URL}forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${API_KEY}`;
         const response = await fetch(url);
@@ -104,8 +111,8 @@ function displayCurrentWeather(data, state) {
 
     saveCityToRecents(data.name);
 
-    const favName = getFavoriteCity();
-    favoriteIcon.classList.toggle('is-favorite', favName === data.name);
+    const favorited = isCityFavorite(data.name);
+    favoriteIcon.classList.toggle('is-favorite', favorited);
     favoriteIcon.dataset.cityName = data.name;
 }
 
@@ -127,7 +134,7 @@ function displayForecast(data) {
     days.forEach((day) => {
         const d = new Date(day.dt * 1000);
         const name = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
-        
+
         const card = document.createElement('div');
         card.className = 'forecast-card';
         card.innerHTML = `
@@ -146,7 +153,7 @@ function renderRecentSearches() {
     if (cities.length === 0) cities = [DEFAULT_CITY];
 
     cities.forEach(city => {
-        const isFav = getFavoriteCity() === city;
+        const isFav = isCityFavorite(city);
         const item = document.createElement('div');
         item.className = 'recent-search-item';
         item.dataset.cityName = city;
@@ -156,25 +163,25 @@ function renderRecentSearches() {
             <i class="fa-solid fa-heart dropdown-favorite-icon ${isFav ? 'is-favorite' : ''}"></i>
         `;
 
-        item.addEventListener('click', (e) => {
+        item.addEventListener('mousedown', (e) => {
             if (!e.target.classList.contains('dropdown-favorite-icon')) {
                 loadWeatherData(city);
                 recentSearchesDropdown.style.display = 'none';
             }
         });
 
-        item.querySelector('.dropdown-favorite-icon').addEventListener('click', handleDropdownFavoriteClick);
+        item.querySelector('.dropdown-favorite-icon').addEventListener('mousedown', handleDropdownFavoriteClick);
         recentSearchesDropdown.appendChild(item);
     });
 }
 
 async function loadWeatherData(city) {
     const cur = await fetchCurrentWeather(city);
-    
+
     if (cur) {
         const stateName = await getState(cur.coord.lat, cur.coord.lon);
         const fore = await fetchForecast(cur.coord.lat, cur.coord.lon);
-        
+
         displayCurrentWeather(cur, stateName);
         if (fore) displayForecast(fore);
     }
@@ -182,32 +189,29 @@ async function loadWeatherData(city) {
 
 function handleSearch() {
     const input = searchInput.value.trim();
-    
+
     if (!input) {
         displayError("Please enter a city or lat, lon");
         return;
     }
 
-    // Check if input is "latitude, longitude" (numbers and a comma)
     const coordPattern = /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/;
-    
+
     if (coordPattern.test(input)) {
-        // If it matches, split the numbers
         const [lat, lon] = input.split(',').map(num => num.trim());
         loadWeatherDataByCoords(lat, lon);
     } else {
-        // Otherwise, treat it as a city name search
         const city = input.replace(/[^a-zA-Z0-9,\s]/g, '');
         loadWeatherData(city);
     }
-    
+
     searchInput.value = '';
+    recentSearchesDropdown.style.display = 'none';
 }
 
-// New function specifically for when someone types lat/lon in the search bar
 async function loadWeatherDataByCoords(lat, lon) {
     const cur = await fetchWeatherByCoords(lat, lon);
-    const fore = await fetchForecast(lat, lon); // Use your updated forecast function
+    const fore = await fetchForecast(lat, lon);
     const st = await getState(lat, lon);
 
     if (cur) {
@@ -228,7 +232,7 @@ function getGeolocation() {
             if (cur) {
                 const fore = await fetchForecast(latitude, longitude);
                 const st = await getState(latitude, longitude);
-                
+
                 displayCurrentWeather(cur, st);
                 if (fore) displayForecast(fore);
             }
@@ -243,26 +247,27 @@ function getGeolocation() {
 function handleFavoriteClick() {
     const city = favoriteIcon.dataset.cityName;
     if (!city) return;
-    
-    const isFav = favoriteIcon.classList.contains('is-favorite');
-    toggleFavorite(city, !isFav);
-    favoriteIcon.classList.toggle('is-favorite');
-    
+
+    toggleFavorite(city);
+
+    const favorited = isCityFavorite(city);
+    favoriteIcon.classList.toggle('is-favorite', favorited);
+
     if (recentSearchesDropdown.style.display === 'block') {
         renderRecentSearches();
     }
 }
 
 function handleDropdownFavoriteClick(e) {
+    e.preventDefault();
     e.stopPropagation();
     const city = e.target.closest('.recent-search-item').dataset.cityName;
-    const isFav = e.target.classList.contains('is-favorite');
-    
-    toggleFavorite(city, !isFav);
+
+    toggleFavorite(city);
     renderRecentSearches();
-    
+
     if (favoriteIcon.dataset.cityName === city) {
-        favoriteIcon.classList.toggle('is-favorite', !isFav);
+        favoriteIcon.classList.toggle('is-favorite', isCityFavorite(city));
     }
 }
 
@@ -278,8 +283,10 @@ function setupEventListeners() {
         recentSearchesDropdown.style.display = 'block';
     });
 
-    searchInput.addEventListener('blur', () => {
-        setTimeout(() => recentSearchesDropdown.style.display = 'none', 200);
+    document.addEventListener('mousedown', (e) => {
+        if (!recentSearchesDropdown.contains(e.target) && e.target !== searchInput) {
+            recentSearchesDropdown.style.display = 'none';
+        }
     });
 }
 

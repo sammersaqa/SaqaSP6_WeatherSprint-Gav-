@@ -1,7 +1,7 @@
 // storage.js
 
 const LAST_CITIES_KEY = 'weatherAppLastCities';
-const FAVORITE_CITY_KEY = 'weatherAppFavoriteCity';
+const FAVORITES_KEY = 'weatherAppFavorites'; 
 const MAX_CITIES = 5;
 
 export function getRecentCities() {
@@ -11,32 +11,39 @@ export function getRecentCities() {
 
 export function saveCityToRecents(city) {
     if (!city) return;
-
     let cities = getRecentCities();
     
-    // move this city to the top if it already exists
     cities = cities.filter(c => c.toLowerCase() !== city.toLowerCase());
     cities.unshift(city);
 
-    // keep only the 5 most recent
     if (cities.length > MAX_CITIES) {
         cities = cities.slice(0, MAX_CITIES);
     }
-
     localStorage.setItem(LAST_CITIES_KEY, JSON.stringify(cities));
 }
 
-export function getFavoriteCity() {
-    return localStorage.getItem(FAVORITE_CITY_KEY);
+
+export function getFavoriteCities() {
+    const saved = localStorage.getItem(FAVORITES_KEY);
+    return saved ? JSON.parse(saved) : [];
 }
 
-export function toggleFavorite(city, isFavorite) {
-    if (isFavorite) {
-        localStorage.setItem(FAVORITE_CITY_KEY, city);
+
+export function toggleFavorite(city) {
+    let favorites = getFavoriteCities();
+    
+    if (favorites.includes(city)) {
+        
+        favorites = favorites.filter(c => c !== city);
     } else {
-        // only clear if this city is currently the favorite
-        if (getFavoriteCity() === city) {
-            localStorage.removeItem(FAVORITE_CITY_KEY);
-        }
+       
+        favorites.push(city);
     }
+    
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+}
+
+
+export function isCityFavorite(city) {
+    return getFavoriteCities().includes(city);
 }
