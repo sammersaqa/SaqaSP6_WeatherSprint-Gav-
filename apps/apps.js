@@ -134,14 +134,21 @@ function displayForecast(data) {
     days.forEach((day) => {
         const d = new Date(day.dt * 1000);
         const name = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+        
+        // Math for Fahrenheit to Celsius: (F - 32) * 5/9
+        const mainTempF = Math.round(day.main.temp);
+        const mainTempC = Math.round((mainTempF - 32) * 5 / 9);
+        
+        const minTempF = Math.round(day.main.temp_min);
+        const minTempC = Math.round((minTempF - 32) * 5 / 9);
 
         const card = document.createElement('div');
         card.className = 'forecast-card';
         card.innerHTML = `
             <div class="day-label">${name}</div>
             <div class="forecast-icon">${getWeatherIcon(day.weather[0].id)}</div>
-            <div class="temp-main">${Math.round(day.main.temp)}°</div>
-            <div class="temp-min">${Math.round(day.main.temp_min)}°</div>
+            <div class="temp-main">${mainTempF}°F / ${mainTempC}°C</div>
+            <div class="temp-min">${minTempF}°F / ${minTempC}°C</div>
         `;
         forecastGrid.appendChild(card);
     });

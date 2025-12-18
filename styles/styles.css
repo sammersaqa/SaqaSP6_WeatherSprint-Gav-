@@ -433,10 +433,11 @@ body {
         font-size: 35px;
     }
     
-    .temp-main {
-        margin-top: 20px;
-        font-size: 1.3em;
-    }
+   .temp-main {
+    font-size: 0.9rem; 
+    font-weight: 500;
+    white-space: nowrap; 
+}
     
     .temp-min {
         margin-bottom: 10px;
