@@ -9,9 +9,9 @@
 // - Applied global 'Inter' typography and glassmorphism styling to match classmate's Figma design.
 
 // Peer Reviewed by: 
-<!-- Comments Here -->
+<!-- Peer Comments Here -->
 // Peer Reviewed by: 
-<!-- Comments Here -->
+<!-- Peer Comments Here -->
 
 
 https://www.figma.com/design/BY6q3sKJffJVl6NERWnb7G/Weather-Figma?node-id=0-1&t=vInGKjJ9zyM5Trwq-1
