@@ -3,7 +3,6 @@ import {
     saveCityToRecents,
     getRecentCities,
     toggleFavorite,
-    getFavoriteCities,
     isCityFavorite
 } from './storage.js';
 
