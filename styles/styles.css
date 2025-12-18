@@ -30,12 +30,12 @@ body {
     align-items: center;
     position: relative;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 50px;
+    border-radius: 25px;
     padding: 12px 25px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     gap: 15px;
-    max-width: 600px;
-    margin: 0 auto;
+    width: 800px;
+    margin-left: 550px;
 }
 
 .search-input {
@@ -262,7 +262,6 @@ body {
 
 .forecast-card {
     background-image: url("/assets/greybackground.jpg");
-    backdrop-filter: blur(10px);
     color: white;
     border-radius: 15px;
     padding: 20px 15px;
