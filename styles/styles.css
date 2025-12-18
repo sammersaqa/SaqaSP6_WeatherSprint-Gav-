@@ -157,13 +157,14 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     padding-top: 15px;
     margin-top: 80px;
-    margin-left: 10px;
-    text-align: center;
+    margin-left: 90px;
+    
     
 }
 
 .title-forecast::before {
-    content: "7 ";
+    content: " ";
+    
 }
 
 .weather-content-wrapper {
@@ -253,7 +254,9 @@ body {
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     min-height: 400px;
-    width: 750px;
+    width: 1050px;
+    gap: 60px;
+    
 }
 
 .forecast-card {
@@ -266,10 +269,12 @@ body {
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 137px;
+    width: 167px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
+    
+    
 }
 
 .forecast-card:hover {

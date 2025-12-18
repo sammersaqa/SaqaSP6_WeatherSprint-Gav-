@@ -118,7 +118,7 @@ function displayForecast(data) {
         const d = new Date(item.dt * 1000);
         const dStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'numeric' });
 
-        if (!usedDates.has(dStr) && days.length < 7) {
+        if (!usedDates.has(dStr) && days.length < 5) {
             usedDates.add(dStr);
             days.push(item);
         }
