@@ -142,7 +142,7 @@ body {
 
 .title-current {
     flex: 0 0 30%;
-    font-size: 1.6em;
+    font-size: 2em;
     font-weight: 600;
     color: white;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
