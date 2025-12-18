@@ -157,7 +157,7 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     padding-top: 15px;
     margin-top: 80px;
-    margin-left: 90px;
+    margin-left: 115px;
     
     
 }
@@ -254,8 +254,8 @@ body {
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     min-height: 400px;
-    width: 1050px;
-    gap: 60px;
+    width: 930px;
+    gap: 40px;
     
 }
 
