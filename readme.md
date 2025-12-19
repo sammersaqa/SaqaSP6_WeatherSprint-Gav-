@@ -11,9 +11,8 @@
 // Peer Reviewed by: Bryce Mack
 Overall The actual project, looks just like the figma. One thing that stands out the most though is that the icons do not match the ones on the figma. Overall, validation looks great. 
 
-// Peer Reviewed by: 
-<!-- Peer Comments Here -->
-
+// Peer Reviewed by: Gavin
+The overall layout of the project looks fantastic its just in different aspect ratios the layout expands the whole page giving you scroll bars. One small thing is the icons arent the same, code looks good i like the local storage file, everything looks great!
 
 https://www.figma.com/design/BY6q3sKJffJVl6NERWnb7G/Weather-Figma?node-id=0-1&t=vInGKjJ9zyM5Trwq-1
 
