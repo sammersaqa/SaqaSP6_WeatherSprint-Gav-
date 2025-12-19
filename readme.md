@@ -10,6 +10,7 @@
 
 // Peer Reviewed by: Bryce Mack
 Overall The actual project, looks just like the figma. One thing that stands out the most though is that the icons do not match the ones on the figma. Overall, validation looks great. 
+
 // Peer Reviewed by: 
 <!-- Peer Comments Here -->
 
