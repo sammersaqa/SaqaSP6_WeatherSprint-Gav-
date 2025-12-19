@@ -1,5 +1,5 @@
 // Name: Sammer Saqa
-// Date Revised: December 18, 2025
+// Date Revised: December 19, 2025
 // Exercise: Weather Sprint - WeatherDeskV2
 // Description: 
 // - Developed a weather dashboard that fetches real-time data using OpenWeather API.
